@@ -21,7 +21,7 @@ export function VideoConferenceClientImpl(props: {
   token: string;
   codec: VideoCodec | undefined;
 }) {
-  const keyProvider = new ExternalE2EEKeyProvider();
+  const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { worker, e2eePassphrase } = useSetupE2EE();
   const e2eeEnabled = !!(e2eePassphrase && worker);
 
@@ -30,7 +30,7 @@ export function VideoConferenceClientImpl(props: {
   const roomOptions = useMemo((): RoomOptions => {
     return {
       publishDefaults: {
-        videoSimulcastLayers: [VideoPresets.h540, VideoPresets.h216],
+        videoSimulcastLayers: [VideoPresets.h720, VideoPresets.h360, VideoPresets.h180],
         red: !e2eeEnabled,
         videoCodec: props.codec,
       },

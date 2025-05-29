@@ -19,7 +19,7 @@ export default async function Page({
   const codec =
     typeof _searchParams.codec === 'string' && isVideoCodec(_searchParams.codec)
       ? _searchParams.codec
-      : 'vp9';
+      : 'h264';
   const hq = _searchParams.hq === 'true' ? true : false;
 
   return (

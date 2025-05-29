@@ -94,14 +94,14 @@ function VideoConferenceComponent(props: {
     codec: VideoCodec;
   };
 }) {
-  const keyProvider = new ExternalE2EEKeyProvider();
+  const keyProvider = React.useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { worker, e2eePassphrase } = useSetupE2EE();
   const e2eeEnabled = !!(e2eePassphrase && worker);
 
   const [e2eeSetupComplete, setE2eeSetupComplete] = React.useState(false);
 
   const roomOptions = React.useMemo((): RoomOptions => {
-    let videoCodec: VideoCodec | undefined = props.options.codec ? props.options.codec : 'vp9';
+    let videoCodec: VideoCodec | undefined = props.options.codec ? props.options.codec : 'h264';
     if (e2eeEnabled && (videoCodec === 'av1' || videoCodec === 'vp9')) {
       videoCodec = undefined;
     }
@@ -113,8 +113,8 @@ function VideoConferenceComponent(props: {
       publishDefaults: {
         dtx: false,
         videoSimulcastLayers: props.options.hq
-          ? [VideoPresets.h1080, VideoPresets.h720]
-          : [VideoPresets.h540, VideoPresets.h216],
+          ? [VideoPresets.h1080, VideoPresets.h720, VideoPresets.h360]
+          : [VideoPresets.h720, VideoPresets.h360, VideoPresets.h180],
         red: !e2eeEnabled,
         videoCodec,
       },
@@ -125,9 +125,9 @@ function VideoConferenceComponent(props: {
       dynacast: true,
       e2ee: keyProvider && worker && e2eeEnabled ? { keyProvider, worker } : undefined,
     };
-  }, [props.userChoices, props.options.hq, props.options.codec]);
+  }, [props.userChoices, props.options.hq, props.options.codec, e2eeEnabled, keyProvider, worker]);
 
-  const room = React.useMemo(() => new Room(roomOptions), []);
+  const room = React.useMemo(() => new Room(roomOptions), [roomOptions]);
 
   React.useEffect(() => {
     if (e2eeEnabled) {
