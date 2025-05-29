@@ -17,8 +17,10 @@ export async function GET(request: NextRequest) {
     const region = request.nextUrl.searchParams.get('region');
     const livekitServerUrl = region ? getLiveKitURL(region) : LIVEKIT_URL;
     let randomParticipantPostfix = request.cookies.get(COOKIE_KEY)?.value;
-    if (livekitServerUrl === undefined) {
-      throw new Error('Invalid region');
+    
+    // Check if we have valid LiveKit configuration
+    if (!livekitServerUrl || !API_KEY || !API_SECRET) {
+      throw new Error('LiveKit configuration is missing. Please check your environment variables.');
     }
 
     if (typeof roomName !== 'string') {
